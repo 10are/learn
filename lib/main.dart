@@ -439,39 +439,89 @@ class ScenarioItem {
 
 final Map<String, dynamic> visaDialogData = {
   "title": "Vize Görüşmesi",
-  "participants": ["Interviewer", "Applicant"],
+  "backgroundImage": "assets/images/visa.webp",
+  "backgroundAudio": "assets/music/arkaplan.mp3",
+  "participants": ["Görevli", "Başvuran"],
   "dialog": [
     {
-      "speaker": "Interviewer",
+      "speaker": "Görevli",
       "text": "Good morning. What is the purpose of your visit to the United States?",
-      "translation": "Günaydın. Amerika Birleşik Devletleri'ne seyahat amacınız nedir?"
+      "translation": "Günaydın. Amerika Birleşik Devletleri'ne seyahat amacınız nedir?",
+      "audioFile": "assets/audio/visa_1.mp3"
     },
     {
-      "speaker": "Applicant",
+      "speaker": "Başvuran",
       "text": "I am planning to visit for tourism purposes. I want to see New York and California.",
-      "translation": "Turizm amaçlı seyahat etmeyi planlıyorum. New York ve California'yı görmek istiyorum."
+      "translation": "Turizm amaçlı seyahat etmeyi planlıyorum. New York ve California'yı görmek istiyorum.",
+      "audioFile": "assets/audio/visa_2.mp3"
     },
     {
-      "speaker": "Interviewer",
-      "text": "How long do you plan to stay?",
-      "translation": "Ne kadar kalmayı planlıyorsunuz?"
+      "speaker": "Görevli",
+      "text": "How long do you plan to stay in the United States?",
+      "translation": "Amerika Birleşik Devletleri'nde ne kadar kalmayı planlıyorsunuz?",
+      "audioFile": "assets/audio/visa_3.mp3"
     },
     {
-      "speaker": "Applicant",
-      "text": "I plan to stay for two weeks.",
-      "translation": "İki hafta kalmayı planlıyorum."
+      "speaker": "Başvuran",
+      "text": "I plan to stay for two weeks. I have already booked my return flight.",
+      "translation": "İki hafta kalmayı planlıyorum. Dönüş uçuşumu zaten rezerve ettim.",
+      "audioFile": "assets/audio/visa_4.mp3"
+    },
+    {
+      "speaker": "Görevli",
+      "text": "Where will you be staying during your visit?",
+      "translation": "Ziyaretiniz sırasında nerede kalacaksınız?",
+      "audioFile": "assets/audio/visa_5.mp3"
+    },
+    {
+      "speaker": "Başvuran",
+      "text": "I have reservations at hotels in New York and San Francisco.",
+      "translation": "New York ve San Francisco'daki otellerde rezervasyonlarım var.",
+      "audioFile": "assets/audio/visa_6.mp3"
+    },
+    {
+      "speaker": "Görevli",
+      "text": "Have you visited the United States before?",
+      "translation": "Daha önce Amerika Birleşik Devletleri'ni ziyaret ettiniz mi?",
+      "audioFile": "assets/audio/visa_7.mp3"
+    },
+    {
+      "speaker": "Başvuran",
+      "text": "No, this will be my first visit to the United States.",
+      "translation": "Hayır, bu Amerika Birleşik Devletleri'ne ilk ziyaretim olacak.",
+      "audioFile": "assets/audio/visa_8.mp3"
     }
   ],
   "questions": [
     {
-      "question": "What is the main purpose of the applicant's visit?",
-      "options": ["Business", "Tourism", "Education", "Family visit"],
+      "question": "Görevli ilk cümlesinde ne sordu?",
+      "options": [
+        "Ne kadar süre kalacağınızı",
+        "Seyahat amacınızı",
+        "Daha önce ABD'ye gidip gitmediğinizi",
+        "Nerede kalacağınızı"
+      ],
       "correctAnswer": 1
     },
     {
-      "question": "How long does the applicant plan to stay?",
-      "options": ["One week", "Two weeks", "One month", "Three months"],
+      "question": "Başvuran kişi Amerika'da ne kadar kalmayı planlıyor?",
+      "options": [
+        "Bir hafta",
+        "İki hafta",
+        "Bir ay",
+        "Üç gün"
+      ],
       "correctAnswer": 1
+    },
+    {
+      "question": "Başvuran kişi daha önce Amerika'yı ziyaret etmiş mi?",
+      "options": [
+        "Evet, bir kez",
+        "Evet, birkaç kez",
+        "Hayır, ilk ziyareti olacak",
+        "Metinde belirtilmemiş"
+      ],
+      "correctAnswer": 2
     }
   ]
 };
