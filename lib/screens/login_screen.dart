@@ -1,8 +1,31 @@
 import 'package:flutter/material.dart';
 import '../main.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'profile_screen.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  
+  void _navigateToEmailLogin() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const EmailLoginScreen()),
+    );
+  }
+
+  void _navigateToPhoneLogin() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const PhoneLoginScreen()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,19 +97,11 @@ class LoginScreen extends StatelessWidget {
               Column(
                 children: [
                   _buildLoginButton(
-                    'Google ile devam et',
-                    Icons.g_mobiledata_rounded,
+                    'Email ile devam et',
+                    Icons.email_outlined,
                     context,
-                    const Color(0xFFEA4335),
-                  ),
-                  const SizedBox(height: 12),
-                  _buildLoginButton(
-                    'Apple ile devam et', 
-                    Icons.apple_rounded,
-                    context,
-                    Colors.white,
-                    textColor: Colors.black,
-                    backgroundColor: Colors.white,
+                    Colors.blue,
+                    onTap: _navigateToEmailLogin,
                   ),
                   const SizedBox(height: 12),
                   _buildLoginButton(
@@ -94,6 +109,7 @@ class LoginScreen extends StatelessWidget {
                     Icons.phone_outlined,
                     context,
                     const Color(0xFF34C759),
+                    onTap: _navigateToPhoneLogin,
                   ),
                   const SizedBox(height: 20),
                   
@@ -103,7 +119,7 @@ class LoginScreen extends StatelessWidget {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const MainScreen(),
+                          builder: (context) => const ProfileScreen(),
                         ),
                       );
                     },
@@ -155,16 +171,10 @@ class LoginScreen extends StatelessWidget {
     Color accentColor, {
     Color? backgroundColor,
     Color? textColor,
+    VoidCallback? onTap,
   }) {
     return GestureDetector(
-      onTap: () {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const MainScreen(),
-          ),
-        );
-      },
+      onTap: onTap,
       child: Container(
         width: double.infinity,
         height: 48,
@@ -196,6 +206,300 @@ class LoginScreen extends StatelessWidget {
                 fontFamily: '.SF Pro Text',
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Email Login Screen
+class EmailLoginScreen extends StatefulWidget {
+  const EmailLoginScreen({super.key});
+
+  @override
+  State<EmailLoginScreen> createState() => _EmailLoginScreenState();
+}
+
+class _EmailLoginScreenState extends State<EmailLoginScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _isLogin = true;
+  bool _isLoading = false;
+
+  Future<void> _handleEmailAuth() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() => _isLoading = true);
+      
+      // Firebase Auth'u geçici olarak atlayalım
+      await Future.delayed(const Duration(milliseconds: 500));
+      
+      setState(() => _isLoading = false);
+      
+      if (mounted) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const ProfileScreen()),
+          (route) => false,
+        );
+      }
+    }
+  }
+
+  String _getErrorMessage(String code) {
+    switch (code) {
+      case 'email-already-in-use':
+        return 'Bu email adresi zaten kullanımda.';
+      case 'wrong-password':
+        return 'Hatalı şifre.';
+      case 'user-not-found':
+        return 'Bu email ile kayıtlı kullanıcı bulunamadı.';
+      case 'invalid-email':
+        return 'Geçersiz email adresi.';
+      default:
+        return 'Bir hata oluştu, lütfen tekrar deneyin.';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Hoş Geldiniz',
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontFamily: '.SF Pro Display',
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  _isLogin ? 'Hesabınıza giriş yapın' : 'Yeni hesap oluşturun',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.white.withOpacity(0.7),
+                  ),
+                ),
+                const SizedBox(height: 40),
+                TextFormField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    labelStyle: const TextStyle(color: Colors.white),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.blue),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.red),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    prefixIcon: const Icon(Icons.email_outlined, color: Colors.white),
+                  ),
+                  style: const TextStyle(color: Colors.white),
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (value) => value?.isEmpty ?? true ? 'Email gerekli' : null,
+                ),
+                const SizedBox(height: 20),
+                TextFormField(
+                  controller: _passwordController,
+                  decoration: InputDecoration(
+                    labelText: 'Şifre',
+                    labelStyle: const TextStyle(color: Colors.white),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.blue),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.red),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    prefixIcon: const Icon(Icons.lock_outline, color: Colors.white),
+                  ),
+                  style: const TextStyle(color: Colors.white),
+                  obscureText: true,
+                  validator: (value) => value?.isEmpty ?? true ? 'Şifre gerekli' : null,
+                ),
+                const SizedBox(height: 30),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _isLoading ? null : _handleEmailAuth,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: _isLoading
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : Text(
+                            _isLogin ? 'Giriş Yap' : 'Kayıt Ol',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Center(
+                  child: TextButton(
+                    onPressed: () => setState(() => _isLogin = !_isLogin),
+                    child: Text(
+                      _isLogin ? 'Hesap oluştur' : 'Giriş yap',
+                      style: const TextStyle(
+                        color: Colors.blue,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// Phone Login Screen
+class PhoneLoginScreen extends StatefulWidget {
+  const PhoneLoginScreen({super.key});
+
+  @override
+  State<PhoneLoginScreen> createState() => _PhoneLoginScreenState();
+}
+
+class _PhoneLoginScreenState extends State<PhoneLoginScreen> {
+  final _phoneController = TextEditingController();
+  final _smsController = TextEditingController();
+  String? _verificationId;
+  bool _codeSent = false;
+  bool _isLoading = false;
+
+  Future<void> _verifyPhone() async {
+    setState(() => _isLoading = true);
+    
+    // Firebase Auth'u geçici olarak atlayalım
+    await Future.delayed(const Duration(milliseconds: 500));
+    
+    if (mounted) {
+      // Kod gönderme ekranını göster (normalde Firebase yapardı)
+      setState(() {
+        _codeSent = true;
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _verifyCode() async {
+    setState(() => _isLoading = true);
+    
+    // Firebase Auth'u geçici olarak atlayalım
+    await Future.delayed(const Duration(milliseconds: 500));
+    
+    setState(() => _isLoading = false);
+    
+    if (mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const ProfileScreen()),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (!_codeSent) ...[
+              TextFormField(
+                controller: _phoneController,
+                decoration: const InputDecoration(
+                  labelText: 'Telefon Numarası',
+                  prefix: Text('+90 ', style: TextStyle(color: Colors.white)),
+                  labelStyle: TextStyle(color: Colors.white),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                  ),
+                ),
+                style: const TextStyle(color: Colors.white),
+                keyboardType: TextInputType.phone,
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _isLoading ? null : _verifyPhone,
+                child: const Text('Kod Gönder'),
+              ),
+            ] else ...[
+              TextFormField(
+                controller: _smsController,
+                decoration: const InputDecoration(
+                  labelText: 'SMS Kodu',
+                  labelStyle: TextStyle(color: Colors.white),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                  ),
+                ),
+                style: const TextStyle(color: Colors.white),
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _isLoading ? null : _verifyCode,
+                child: const Text('Doğrula'),
+              ),
+            ],
           ],
         ),
       ),

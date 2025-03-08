@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -434,6 +435,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 20),
+          // Çıkış yap butonu
+          InkWell(
+            onTap: () async {
+              await FirebaseAuth.instance.signOut();
+            },
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              decoration: BoxDecoration(
+                color: Colors.red.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Colors.red.withOpacity(0.3),
+                ),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.logout,
+                    color: Colors.red,
+                    size: 20,
+                  ),
+                  SizedBox(width: 8),
+                  Text(
+                    'Çıkış Yap',
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),
